@@ -1,80 +1,97 @@
-body {
-  background-color: #f9f9f9;
-  font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  justify-content: center;
-  padding: 40px;
+/* Estilos generales */
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.contenedor {
-  background-color: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 600px;
-}
-
-h1, h2 {
+body {
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   color: #333;
-  margin-top: 20px;
-  text-align: center;
 }
 
-form {
+/* Título principal */
+h1 {
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  color: white;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Contenedor principal */
+#auth-container {
+  background-color: white;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  transition: all 0.3s ease;
+}
+
+/* Formulario */
+#login-form, #register-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 15px;
 }
 
-input, select {
-  padding: 10px;
-  font-size: 16px;
+h2 {
+  text-align: center;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+/* Inputs */
+input[type="email"],
+input[type="password"] {
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
 }
 
+input:focus {
+  outline: none;
+  border-color: #74ebd5;
+  box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
+}
+
+/* Botones */
 button {
-  padding: 10px 15px;
-  background-color: #1f8ef1;
+  padding: 12px;
+  background: #6a82fb;
   color: white;
   border: none;
   border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  font-weight: bold;
-  margin-top: 10px;
+  transition: background 0.3s ease;
 }
 
 button:hover {
-  background-color: #0c71c3;
+  background: #5a72e3;
 }
 
-.cerrar-btn {
-  background-color: #e74c3c;
-  display: block;
-  width: 30%;
+/* Enlaces */
+p {
+  text-align: center;
+  font-size: 0.95rem;
 }
 
-.cerrar:hover {
-  background-color: #c0392b;
+a {
+  color: #6a82fb;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-ul li {
-  margin: 10px 0;
-  padding: 8px;
-  background-color: #f3f3f3;
-  border-radius: 6px;
-}
-
-img {
-  display: block;
-  margin-top: 5px;
-  border-radius: 6px;
+a:hover {
+  text-decoration: underline;
 }
