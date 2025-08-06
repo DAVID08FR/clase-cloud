@@ -21,44 +21,50 @@ h1 {
   margin-bottom: 30px;
   font-size: 2.5rem;
   color: white;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.4);
 }
 
 /* Contenedor principal */
-#auth-container {
+.container {
   background-color: white;
   padding: 40px 30px;
   border-radius: 15px;
-  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 700px;
   transition: all 0.3s ease;
 }
 
-/* Formulario */
-#login-form, #register-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.card {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 h2 {
   text-align: center;
   color: #444;
   margin-bottom: 10px;
+  font-size: 1.8rem;
 }
 
 /* Inputs */
+input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="file"],
+select {
   padding: 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
+  width: 100%;
+  margin-bottom: 15px;
   transition: border-color 0.2s ease;
 }
 
-input:focus {
+input:focus, select:focus {
   outline: none;
   border-color: #74ebd5;
   box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
@@ -71,8 +77,9 @@ button {
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   cursor: pointer;
+  width: 100%;
   transition: background 0.3s ease;
 }
 
@@ -80,18 +87,53 @@ button:hover {
   background: #5a72e3;
 }
 
-/* Enlaces */
-p {
-  text-align: center;
-  font-size: 0.95rem;
+/* Estilo de los botones de cerrar sesión */
+.cerrar-btn {
+  background: #ff4c4c;
+  color: white;
+  font-size: 1.1rem;
+  padding: 10px;
+  border-radius: 8px;
+  width: 200px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s ease;
+  margin-bottom: 20px;
 }
 
-a {
-  color: #6a82fb;
-  text-decoration: none;
-  font-weight: bold;
+.cerrar-btn:hover {
+  background: #e03b3b;
 }
 
-a:hover {
-  text-decoration: underline;
+/* Listas */
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul li {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  color: #444;
+}
+
+/* Estilos para el card de subir archivo */
+label {
+  font-size: 1rem;
+  color: #555;
+}
+
+select {
+  margin-top: 10px;
+}
+
+/* Animación al pasar el mouse sobre los formularios */
+input[type="text"]:focus,
+input[type="email"]:focus {
+  border-color: #74ebd5;
+  box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
+}
+
+button:active {
+  transform: scale(0.98);
 }
