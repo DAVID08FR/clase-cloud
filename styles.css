@@ -1,48 +1,41 @@
-/* ====== Reset básico ====== */
+/* Estilos generales */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  background: linear-gradient(135deg, #1E2A36, #2C3E50);
-  min-height: 100vh;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+  height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  flex-direction: column;
   color: #333;
 }
 
-/* ====== Títulos ====== */
+/* Título principal */
 h1 {
   margin-bottom: 30px;
-  font-size: 2.2rem;
-  color: #fff;
-  text-align: center;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 2.5rem;
+  color: white;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* ====== Contenedor principal ====== */
+/* Contenedor principal */
 #auth-container {
-  background-color: #ffffff;
+  background-color: white;
   padding: 40px 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 420px;
-  transition: all 0.3s ease-in-out;
+  max-width: 400px;
+  transition: all 0.3s ease;
 }
 
-#auth-container:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
-}
-
-/* ====== Formularios ====== */
+/* Formulario */
 #login-form, #register-form {
   display: flex;
   flex-direction: column;
@@ -51,111 +44,54 @@ h1 {
 
 h2 {
   text-align: center;
-  color: #2C3E50;
-  margin-bottom: 15px;
-  font-size: 1.5rem;
-  font-weight: 500;
+  color: #444;
+  margin-bottom: 10px;
 }
 
-/* ====== Inputs ====== */
+/* Inputs */
 input[type="email"],
-input[type="password"],
-input[type="text"],
-select {
+input[type="password"] {
   padding: 12px;
-  border: 1px solid #ccd1d9;
+  border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
-  background-color: #fafafa;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
-input:focus,
-select:focus {
+input:focus {
   outline: none;
-  border-color: #4A90E2;
-  background-color: #fff;
-  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
+  border-color: #74ebd5;
+  box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
 }
 
-/* ====== Botones ====== */
+/* Botones */
 button {
   padding: 12px;
-  background: linear-gradient(135deg, #4A90E2, #007AFF);
+  background: #6a82fb;
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
-  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 button:hover {
-  background: linear-gradient(135deg, #3b7bc1, #0063cc);
-  transform: translateY(-1px);
+  background: #5a72e3;
 }
 
-button:active {
-  transform: translateY(0);
-}
-
-/* ====== Links ====== */
+/* Enlaces */
 p {
   text-align: center;
   font-size: 0.95rem;
-  color: #555;
 }
 
 a {
-  color: #4A90E2;
+  color: #6a82fb;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: bold;
 }
 
 a:hover {
   text-decoration: underline;
-}
-
-/* ====== Tablas y tarjetas ====== */
-.card {
-  border: none;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.card-header {
-  font-weight: 500;
-  font-size: 1.1rem;
-  padding: 15px 20px;
-}
-
-.table {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.table thead th {
-  background-color: #f5f6f8;
-  color: #2C3E50;
-  font-weight: 600;
-}
-
-.table-hover tbody tr:hover {
-  background-color: #f0f4ff;
-  transition: 0.2s ease-in-out;
-}
-
-/* ====== Lista de archivos ====== */
-#lista-archivos li {
-  background-color: #f8f9fa;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  border: 1px solid #e0e0e0;
-  transition: background-color 0.2s ease;
-}
-
-#lista-archivos li:hover {
-  background-color: #eef3ff;
 }

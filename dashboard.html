@@ -11,102 +11,171 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+    .app-navbar {
+      backdrop-filter: saturate(180%) blur(6px);
+    }
+    .panel {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.05);
+      border-radius: 1rem;
+      box-shadow: 0 6px 24px rgba(0,0,0,.06);
+    }
+    .panel-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .panel-body {
+      padding: 1.25rem;
+    }
+    .section-title {
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .muted {
+      color: #6c757d;
+    }
+    .table thead th {
+      font-weight: 600;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(0,0,0,.08);
+    }
+    .btn-ghost:hover {
+      background: rgba(0,0,0,.03);
+    }
+    @media (min-width: 992px) {
+      .sticky-col {
+        position: sticky;
+        top: 88px; /* alto aproximado de la navbar */
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container my-5">
-    <h1 class="text-center mb-5">Panel de Estudiantes</h1>
+  <!-- NAVBAR SUPERIOR -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom app-navbar sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="fas fa-graduation-cap me-2"></i>Panel de Estudiantes
+      </a>
 
-    <!-- Cerrar sesión -->
-    <button onclick="cerrarSesion()" class="btn btn-danger mb-4 float-end">
-      <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-    </button>
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <span class="muted d-none d-md-inline">Sesión activa</span>
+        <button onclick="cerrarSesion()" class="btn btn-outline-danger">
+          <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
 
-    <div class="row row-cols-1 row-cols-md-2 g-4">
+  <!-- CONTENIDO -->
+  <main class="container py-4 py-lg-5">
+    <div class="row g-4">
+      <!-- Columna izquierda: Formularios / Acciones -->
+      <div class="col-lg-4">
+        <div class="sticky-col">
+          <!-- Registrar / Editar Estudiante -->
+          <section class="panel mb-4">
+            <div class="panel-header">
+              <i class="fas fa-user-plus text-primary"></i>
+              <span class="section-title">Registrar estudiante</span>
+            </div>
+            <div class="panel-body">
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" id="nombre" class="form-control" placeholder="Nombre del estudiante"/>
+              </div>
+              <div class="mb-3">
+                <label for="correo" class="form-label">Correo</label>
+                <input type="email" id="correo" class="form-control" placeholder="correo@ejemplo.com"/>
+              </div>
+              <div class="mb-3">
+                <label for="clase" class="form-label">Clase</label>
+                <input type="text" id="clase" class="form-control" placeholder="Ej. Matemáticas"/>
+              </div>
+              <button id="btn-guardar" onclick="agregarEstudiante()" class="btn btn-primary w-100">
+                <i class="fas fa-save me-2"></i>Guardar
+              </button>
+            </div>
+          </section>
 
-      <!-- Registrar / Editar Estudiante -->
-      <div class="col">
-        <div class="card shadow-lg rounded">
-          <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">
-              <i class="fas fa-user-plus"></i> Registrar estudiante
-            </h4>
-          </div>
-          <div class="card-body">
-            <input type="text" id="nombre" class="form-control mb-3" placeholder="Nombre del estudiante"/>
-            <input type="email" id="correo" class="form-control mb-3" placeholder="Correo"/>
-            <input type="text" id="clase" class="form-control mb-3" placeholder="Clase"/>
-            <button id="btn-guardar" onclick="agregarEstudiante()" class="btn btn-primary w-100">
-              <i class="fas fa-save"></i> Guardar
-            </button>
-          </div>
+          <!-- Subir Archivo -->
+          <section class="panel">
+            <div class="panel-header">
+              <i class="fas fa-upload text-warning"></i>
+              <span class="section-title">Subir archivo</span>
+            </div>
+            <div class="panel-body">
+              <div class="mb-3">
+                <label for="estudiante" class="form-label">Selecciona un estudiante</label>
+                <select id="estudiante" class="form-select"></select>
+              </div>
+              <div class="mb-3">
+                <label for="archivo" class="form-label">Archivo</label>
+                <input type="file" id="archivo" class="form-control" />
+              </div>
+              <button onclick="subirArchivo()" class="btn btn-success w-100">
+                <i class="fas fa-cloud-upload-alt me-2"></i>Subir
+              </button>
+            </div>
+          </section>
         </div>
       </div>
 
-      <!-- Lista de Estudiantes (ahora en tabla) -->
-      <div class="col">
-        <div class="card shadow-lg rounded">
-          <div class="card-header bg-success text-white">
-            <h4 class="mb-0">
-              <i class="fas fa-list-alt"></i> Lista de estudiantes
-            </h4>
+      <!-- Columna derecha: Tabla + Archivos -->
+      <div class="col-lg-8">
+        <!-- Lista de Estudiantes -->
+        <section class="panel mb-4">
+          <div class="panel-header">
+            <i class="fas fa-list-alt text-success"></i>
+            <span class="section-title">Lista de estudiantes</span>
           </div>
-          <div class="card-body">
+          <div class="panel-body">
             <div class="table-responsive">
-              <table class="table table-hover align-middle">
-                <thead class="table-success">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
                   <tr>
-                    <th>#</th>
+                    <th class="text-muted">#</th>
                     <th>Nombre</th>
                     <th>Clase</th>
                     <th>Correo</th>
-                    <th style="width: 140px;">Acciones</th>
+                    <th class="text-center" style="width: 160px;">Acciones</th>
                   </tr>
                 </thead>
                 <tbody id="tabla-estudiantes"></tbody>
               </table>
-              <div id="empty-estudiantes" class="text-muted small d-none">
-                No hay estudiantes todavía.
-              </div>
+            </div>
+            <div id="empty-estudiantes" class="text-muted small d-none mt-3">
+              No hay estudiantes todavía.
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <!-- Subir Archivo -->
-      <div class="col">
-        <div class="card shadow-lg rounded">
-          <div class="card-header bg-warning text-white">
-            <h4 class="mb-0">
-              <i class="fas fa-upload"></i> Subir archivo
-            </h4>
+        <!-- Archivos subidos -->
+        <section class="panel">
+          <div class="panel-header">
+            <i class="fas fa-folder-open text-info"></i>
+            <span class="section-title">Archivos subidos</span>
           </div>
-          <div class="card-body">
-            <label for="estudiante" class="form-label">Selecciona un estudiante:</label>
-            <select id="estudiante" class="form-select mb-3"></select>
-            <input type="file" id="archivo" class="form-control mb-3" />
-            <button onclick="subirArchivo()" class="btn btn-success w-100">
-              <i class="fas fa-cloud-upload-alt"></i> Subir
-            </button>
+          <div class="panel-body">
+            <ul id="lista-archivos" class="list-group list-group-flush">
+              <!-- Se rellena por JS -->
+            </ul>
           </div>
-        </div>
+        </section>
       </div>
-
-      <!-- Archivos subidos -->
-      <div class="col">
-        <div class="card shadow-lg rounded">
-          <div class="card-header bg-info text-white">
-            <h4 class="mb-0">
-              <i class="fas fa-folder-open"></i> Archivos subidos
-            </h4>
-          </div>
-          <div class="card-body">
-            <ul id="lista-archivos" class="list-group"></ul>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
+  </main>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
