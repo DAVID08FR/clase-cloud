@@ -42,7 +42,7 @@
         </div>
       </div>
 
-      <!-- Lista de Estudiantes (ahora en tabla) -->
+      <!-- Lista de Estudiantes -->
       <div class="col">
         <div class="card shadow-lg rounded">
           <div class="card-header bg-success text-white">
@@ -51,23 +51,7 @@
             </h4>
           </div>
           <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-hover align-middle">
-                <thead class="table-success">
-                  <tr>
-                    <th>#</th>
-                    <th>Nombre</th>
-                    <th>Clase</th>
-                    <th>Correo</th>
-                    <th style="width: 140px;">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="tabla-estudiantes"></tbody>
-              </table>
-              <div id="empty-estudiantes" class="text-muted small d-none">
-                No hay estudiantes todavía.
-              </div>
-            </div>
+            <ul id="lista-estudiantes" class="list-group"></ul>
           </div>
         </div>
       </div>
