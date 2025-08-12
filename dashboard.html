@@ -1,342 +1,116 @@
-/**********************
- * Supabase Client
- **********************/
-const SUPABASE_URL = "https://fzbheuoaxnenhrwadrvn.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6YmhldW9heG5lbmhyd2FkcnZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1MDUwOTMsImV4cCI6MjA3MDA4MTA5M30.49jF_IMBuvKt-HWpmN-9USgw6tDqUKzrW1uaOqNFi40"; // usa tu propia clave
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel - Estudiantes</title>
 
-/**********************
- * Estado
- **********************/
-let editingId = null;
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="container my-5">
+    <h1 class="text-center mb-5">Panel de Estudiantes</h1>
 
-/**********************
- * Helpers UI
- **********************/
-function setButtonLoading(btn, loading, textIdle = "Guardar", textLoading = "Guardando...") {
-  if (!btn) return;
-  btn.disabled = loading;
-  btn.innerHTML = loading
-    ? `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${textLoading}`
-    : `<i class="fas fa-save me-2"></i>${textIdle}`;
-}
+    <!-- Cerrar sesión -->
+    <button onclick="cerrarSesion()" class="btn btn-danger mb-4 float-end">
+      <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+    </button>
 
-function createActionBtn({ label, icon, className, onClick }) {
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = className;
-  btn.innerHTML = `<i class="${icon} me-1"></i>${label}`;
-  btn.addEventListener("click", onClick);
-  return btn;
-}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
 
-/**********************
- * Estudiantes: CRUD
- **********************/
-async function guardarEstudiante() {
-  const nombre = document.getElementById("nombre").value.trim();
-  const correo = document.getElementById("correo").value.trim();
-  const clase  = document.getElementById("clase").value.trim();
-  const btn = document.getElementById("btn-guardar");
+      <!-- Registrar / Editar Estudiante -->
+      <div class="col">
+        <div class="card shadow-lg rounded">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+              <i class="fas fa-user-plus"></i> Registrar estudiante
+            </h4>
+          </div>
+          <div class="card-body">
+            <input type="text" id="nombre" class="form-control mb-3" placeholder="Nombre del estudiante"/>
+            <input type="email" id="correo" class="form-control mb-3" placeholder="Correo"/>
+            <input type="text" id="clase" class="form-control mb-3" placeholder="Clase"/>
+            <button id="btn-guardar" onclick="agregarEstudiante()" class="btn btn-primary w-100">
+              <i class="fas fa-save"></i> Guardar
+            </button>
+          </div>
+        </div>
+      </div>
 
-  if (!nombre || !correo || !clase) {
-    alert("Completa todos los campos.");
-    return;
-  }
+      <!-- Lista de Estudiantes (ahora en tabla) -->
+      <div class="col">
+        <div class="card shadow-lg rounded">
+          <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+              <i class="fas fa-list-alt"></i> Lista de estudiantes
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-success">
+                  <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Clase</th>
+                    <th>Correo</th>
+                    <th style="width: 140px;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-estudiantes"></tbody>
+              </table>
+              <div id="empty-estudiantes" class="text-muted small d-none">
+                No hay estudiantes todavía.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  const { data: { user }, error: userError } = await client.auth.getUser();
-  if (userError || !user) {
-    alert("No estás autenticado.");
-    return;
-  }
+      <!-- Subir Archivo -->
+      <div class="col">
+        <div class="card shadow-lg rounded">
+          <div class="card-header bg-warning text-white">
+            <h4 class="mb-0">
+              <i class="fas fa-upload"></i> Subir archivo
+            </h4>
+          </div>
+          <div class="card-body">
+            <label for="estudiante" class="form-label">Selecciona un estudiante:</label>
+            <select id="estudiante" class="form-select mb-3"></select>
+            <input type="file" id="archivo" class="form-control mb-3" />
+            <button onclick="subirArchivo()" class="btn btn-success w-100">
+              <i class="fas fa-cloud-upload-alt"></i> Subir
+            </button>
+          </div>
+        </div>
+      </div>
 
-  try {
-    setButtonLoading(btn, true, editingId ? "Actualizar" : "Guardar", editingId ? "Actualizando..." : "Guardando...");
+      <!-- Archivos subidos -->
+      <div class="col">
+        <div class="card shadow-lg rounded">
+          <div class="card-header bg-info text-white">
+            <h4 class="mb-0">
+              <i class="fas fa-folder-open"></i> Archivos subidos
+            </h4>
+          </div>
+          <div class="card-body">
+            <ul id="lista-archivos" class="list-group"></ul>
+          </div>
+        </div>
+      </div>
 
-    if (editingId) {
-      // UPDATE
-      const { error } = await client
-        .from("estudiantes")
-        .update({ nombre, correo, clase })
-        .eq("id", editingId)
-        .eq("user_id", user.id);
-      if (error) throw error;
-      alert("Estudiante actualizado.");
-      editingId = null;
-      btn.innerHTML = `<i class="fas fa-save me-2"></i>Guardar`;
-    } else {
-      // INSERT
-      const { error } = await client.from("estudiantes").insert({ nombre, correo, clase, user_id: user.id });
-      if (error) throw error;
-      alert("Estudiante agregado.");
-    }
+    </div>
+  </div>
 
-    document.getElementById("nombre").value = "";
-    document.getElementById("correo").value = "";
-    document.getElementById("clase").value  = "";
-    await cargarEstudiantes();
-  } catch (err) {
-    alert("Error al guardar: " + err.message);
-  } finally {
-    setButtonLoading(btn, false);
-  }
-}
-
-// Mantén compatibilidad con tu HTML actual:
-function agregarEstudiante() {
-  return guardarEstudiante();
-}
-
-function iniciarEdicion(est) {
-  document.getElementById("nombre").value = est.nombre;
-  document.getElementById("correo").value = est.correo;
-  document.getElementById("clase").value  = est.clase;
-  editingId = est.id;
-  const btn = document.getElementById("btn-guardar");
-  if (btn) btn.innerHTML = `<i class="fas fa-sync-alt me-2"></i>Actualizar`;
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-async function eliminarEstudiante(id) {
-  if (!confirm("¿Eliminar este estudiante?")) return;
-
-  const { data: { user }, error: userError } = await client.auth.getUser();
-  if (userError || !user) { alert("No estás autenticado."); return; }
-
-  const { error } = await client
-    .from("estudiantes")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", user.id);
-
-  if (error) return alert("Error al eliminar: " + error.message);
-
-  alert("Estudiante eliminado.");
-  cargarEstudiantes();
-}
-
-async function cargarEstudiantes() {
-  const { data, error } = await client
-    .from("estudiantes")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  const tbody = document.getElementById("tabla-estudiantes");
-  const empty = document.getElementById("empty-estudiantes");
-  const selectEst = document.getElementById("estudiante");
-
-  if (error) {
-    alert("Error al cargar estudiantes: " + error.message);
-    return;
-  }
-
-  // Tabla
-  tbody.innerHTML = "";
-  if (!data || data.length === 0) {
-    empty.classList.remove("d-none");
-  } else {
-    empty.classList.add("d-none");
-    data.forEach((est, idx) => {
-      const tr = document.createElement("tr");
-
-      const tdIdx = document.createElement("td");
-      tdIdx.className = "text-muted";
-      tdIdx.textContent = idx + 1;
-
-      const tdNombre = document.createElement("td");
-      tdNombre.textContent = est.nombre;
-
-      const tdClase = document.createElement("td");
-      tdClase.textContent = est.clase;
-
-      const tdCorreo = document.createElement("td");
-      tdCorreo.textContent = est.correo;
-
-      const tdAcciones = document.createElement("td");
-      tdAcciones.className = "text-center";
-      const group = document.createElement("div");
-      group.className = "btn-group btn-group-sm";
-
-      const btnEdit = createActionBtn({
-        label: "Editar",
-        icon: "fas fa-edit",
-        className: "btn btn-outline-primary",
-        onClick: () => iniciarEdicion(est),
-      });
-      const btnDel = createActionBtn({
-        label: "Eliminar",
-        icon: "fas fa-trash-alt",
-        className: "btn btn-outline-danger",
-        onClick: () => eliminarEstudiante(est.id),
-      });
-
-      group.appendChild(btnEdit);
-      group.appendChild(btnDel);
-      tdAcciones.appendChild(group);
-
-      tr.appendChild(tdIdx);
-      tr.appendChild(tdNombre);
-      tr.appendChild(tdClase);
-      tr.appendChild(tdCorreo);
-      tr.appendChild(tdAcciones);
-
-      tbody.appendChild(tr);
-    });
-  }
-
-  // Select para subir archivos
-  if (selectEst) {
-    selectEst.innerHTML = "";
-    const optDefault = document.createElement("option");
-    optDefault.value = "";
-    optDefault.textContent = "— Selecciona —";
-    selectEst.appendChild(optDefault);
-
-    (data || []).forEach((est) => {
-      const opt = document.createElement("option");
-      opt.value = est.id;
-      opt.textContent = est.nombre;
-      selectEst.appendChild(opt);
-    });
-  }
-}
-
-/**********************
- * Storage: subir, listar, borrar
- **********************/
-async function subirArchivo() {
-  const archivoInput = document.getElementById("archivo");
-  const archivo = archivoInput?.files?.[0];
-  if (!archivo) return alert("Selecciona un archivo primero.");
-
-  const { data: { user }, error: userError } = await client.auth.getUser();
-  if (userError || !user) return alert("Sesión no válida.");
-
-  const carpeta = `${user.id}/`;                 // <— importante el slash
-  const nombreRuta = `${carpeta}${archivo.name}`;
-
-  // Opcional: podrías asociar archivo a estudiante seleccionado:
-  // const estId = document.getElementById("estudiante").value;
-
-  const { error } = await client.storage
-    .from("tareas")
-    .upload(nombreRuta, archivo, {
-      cacheControl: "3600",
-      upsert: true, // permite reemplazar si ya existe
-    });
-
-  if (error) return alert("Error al subir: " + error.message);
-
-  alert("Archivo subido correctamente.");
-  archivoInput.value = "";
-  await listarArchivos();
-}
-
-async function listarArchivos() {
-  const { data: { user }, error: userError } = await client.auth.getUser();
-  if (userError || !user) { alert("Sesión no válida."); return; }
-
-  const lista = document.getElementById("lista-archivos");
-  lista.innerHTML = "";
-
-  const path = `${user.id}/`; // <— directorio del usuario
-
-  const { data: files, error } = await client.storage
-    .from("tareas")
-    .list(path, {
-      limit: 50,
-      sortBy: { column: "updated_at", order: "desc" },
-    });
-
-  if (error) {
-    console.error(error);
-    lista.innerHTML = `<li class="list-group-item text-danger">Error al listar archivos</li>`;
-    return;
-  }
-
-  if (!files || files.length === 0) {
-    lista.innerHTML = `<li class="list-group-item text-muted">Sin archivos</li>`;
-    return;
-  }
-
-  for (const f of files) {
-    // URL firmada por 1 hora
-    const { data: signed, error: urlErr } = await client.storage
-      .from("tareas")
-      .createSignedUrl(path + f.name, 60 * 60);
-
-    if (urlErr) {
-      console.error(urlErr);
-      continue;
-    }
-
-    const url = signed.signedUrl;
-    const esImagen = /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name);
-    const esPDF    = /\.pdf$/i.test(f.name);
-
-    const li = document.createElement("li");
-    li.className = "list-group-item d-flex align-items-center justify-content-between";
-
-    const left = document.createElement("div");
-    left.className = "d-flex align-items-center gap-3";
-
-    if (esImagen) {
-      const img = document.createElement("img");
-      img.src = url;
-      img.alt = f.name;
-      img.style.maxHeight = "48px";
-      img.className = "rounded border";
-      left.appendChild(img);
-    }
-
-    const info = document.createElement("div");
-    info.innerHTML = `
-      <div class="fw-semibold">${f.name}</div>
-      ${esImagen ? `<a href="${url}" target="_blank">Ver imagen</a>` :
-       esPDF    ? `<a href="${url}" target="_blank">Ver PDF</a>` :
-                  `<a href="${url}" target="_blank">Descargar</a>`}
-    `;
-    left.appendChild(info);
-
-    const btnDel = document.createElement("button");
-    btnDel.className = "btn btn-sm btn-outline-danger";
-    btnDel.innerHTML = `<i class="fas fa-trash-alt me-1"></i>Borrar`;
-    btnDel.addEventListener("click", async () => {
-      if (!confirm("¿Eliminar este archivo?")) return;
-      const { error: delErr } = await client.storage.from("tareas").remove([path + f.name]);
-      if (delErr) return alert("No se pudo eliminar: " + delErr.message);
-      listarArchivos();
-    });
-
-    li.appendChild(left);
-    li.appendChild(btnDel);
-    lista.appendChild(li);
-  }
-}
-
-/**********************
- * Sesión
- **********************/
-async function cerrarSesion() {
-  const { error } = await client.auth.signOut();
-  if (error) {
-    alert("Error al cerrar sesión: " + error.message);
-  } else {
-    localStorage.removeItem("token");
-    window.location.href = "index.html";
-  }
-}
-
-/**********************
- * Init
- **********************/
-document.addEventListener("DOMContentLoaded", async () => {
-  await cargarEstudiantes();
-  await listarArchivos();
-});
-
-// Exponer funciones usadas por el HTML inline
-window.agregarEstudiante = agregarEstudiante;
-window.guardarEstudiante = guardarEstudiante;
-window.subirArchivo = subirArchivo;
-window.cerrarSesion = cerrarSesion;
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Tu JS -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
