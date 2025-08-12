@@ -1,41 +1,48 @@
-/* Estilos generales */
+/* ====== Reset básico ====== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  background: linear-gradient(135deg, #74ebd5, #9face6);
-  height: 100vh;
+  background: linear-gradient(135deg, #1E2A36, #2C3E50);
+  min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  flex-direction: column;
+  padding: 40px 20px;
   color: #333;
 }
 
-/* Título principal */
+/* ====== Títulos ====== */
 h1 {
   margin-bottom: 30px;
-  font-size: 2.5rem;
-  color: white;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  font-size: 2.2rem;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
-/* Contenedor principal */
+/* ====== Contenedor principal ====== */
 #auth-container {
-  background-color: white;
+  background-color: #ffffff;
   padding: 40px 30px;
-  border-radius: 15px;
-  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 400px;
-  transition: all 0.3s ease;
+  max-width: 420px;
+  transition: all 0.3s ease-in-out;
 }
 
-/* Formulario */
+#auth-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+/* ====== Formularios ====== */
 #login-form, #register-form {
   display: flex;
   flex-direction: column;
@@ -44,54 +51,111 @@ h1 {
 
 h2 {
   text-align: center;
-  color: #444;
-  margin-bottom: 10px;
+  color: #2C3E50;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  font-weight: 500;
 }
 
-/* Inputs */
+/* ====== Inputs ====== */
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="text"],
+select {
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #ccd1d9;
   border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.2s ease;
+  background-color: #fafafa;
+  transition: all 0.2s ease;
 }
 
-input:focus {
+input:focus,
+select:focus {
   outline: none;
-  border-color: #74ebd5;
-  box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
+  border-color: #4A90E2;
+  background-color: #fff;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
 }
 
-/* Botones */
+/* ====== Botones ====== */
 button {
   padding: 12px;
-  background: #6a82fb;
+  background: linear-gradient(135deg, #4A90E2, #007AFF);
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-  background: #5a72e3;
+  background: linear-gradient(135deg, #3b7bc1, #0063cc);
+  transform: translateY(-1px);
 }
 
-/* Enlaces */
+button:active {
+  transform: translateY(0);
+}
+
+/* ====== Links ====== */
 p {
   text-align: center;
   font-size: 0.95rem;
+  color: #555;
 }
 
 a {
-  color: #6a82fb;
+  color: #4A90E2;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 500;
 }
 
 a:hover {
   text-decoration: underline;
+}
+
+/* ====== Tablas y tarjetas ====== */
+.card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-header {
+  font-weight: 500;
+  font-size: 1.1rem;
+  padding: 15px 20px;
+}
+
+.table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table thead th {
+  background-color: #f5f6f8;
+  color: #2C3E50;
+  font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f0f4ff;
+  transition: 0.2s ease-in-out;
+}
+
+/* ====== Lista de archivos ====== */
+#lista-archivos li {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+}
+
+#lista-archivos li:hover {
+  background-color: #eef3ff;
 }
