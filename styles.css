@@ -1,97 +1,22 @@
-/* Estilos generales */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
 body {
-  background: linear-gradient(135deg, #74ebd5, #9face6);
-  height: 100vh;
+  font-family: Arial, sans-serif;
+  background: #f0f4f8;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  color: #333;
+  min-height: 100vh;
+  margin: 0;
 }
 
-/* Título principal */
 h1 {
-  margin-bottom: 30px;
-  font-size: 2.5rem;
-  color: white;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  color: #333;
+  margin-bottom: 20px;
 }
 
-/* Contenedor principal */
 #auth-container {
-  background-color: white;
-  padding: 40px 30px;
-  border-radius: 15px;
-  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 400px;
-  transition: all 0.3s ease;
-}
-
-/* Formulario */
-#login-form, #register-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-h2 {
-  text-align: center;
-  color: #444;
-  margin-bottom: 10px;
-}
-
-/* Inputs */
-input[type="email"],
-input[type="password"] {
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
-}
-
-input:focus {
-  outline: none;
-  border-color: #74ebd5;
-  box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
-}
-
-/* Botones */
-button {
-  padding: 12px;
-  background: #6a82fb;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button:hover {
-  background: #5a72e3;
-}
-
-/* Enlaces */
-p {
-  text-align: center;
-  font-size: 0.95rem;
-}
-
-a {
-  color: #6a82fb;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-a:hover {
-  text-decoration: underline;
-}
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width:
