@@ -1,22 +1,68 @@
+// =========================
+// Configuración Supabase
+// =========================
 const SUPABASE_URL = "https://fzbheuoaxnenhrwadrvn.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6YmhldW9heG5lbmhyd2FkcnZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1MDUwOTMsImV4cCI6MjA3MDA4MTA5M30.49jF_IMBuvKt-HWpmN-9USgw6tDqUKzrW1uaOqNFi40"; // clave de ejemplo
 
 // Crear cliente de Supabase
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Función para agregar un estudiante
+// =========================
+// Estado de edición
+// =========================
+let editId = null;
+
+// =========================
+// Helpers
+// =========================
+function limpiarFormulario() {
+  document.getElementById("nombre").value = "";
+  document.getElementById("correo").value = "";
+  document.getElementById("clase").value  = "";
+}
+
+// =========================
+/** Crear / Actualizar estudiante */
+// =========================
 async function agregarEstudiante() {
-  const nombre = document.getElementById("nombre").value;
-  const correo = document.getElementById("correo").value;
-  const clase = document.getElementById("clase").value;
+  const nombre = document.getElementById("nombre").value.trim();
+  const correo = document.getElementById("correo").value.trim();
+  const clase  = document.getElementById("clase").value.trim();
+
+  if (!nombre || !correo || !clase) {
+    alert("Completa todos los campos.");
+    return;
+  }
 
   const { data: { user }, error: userError } = await client.auth.getUser();
-
   if (userError || !user) {
     alert("No estás autenticado.");
     return;
   }
 
+  if (editId) {
+    // UPDATE
+    const { error } = await client
+      .from("estudiantes")
+      .update({ nombre, correo, clase })
+      .eq("id", editId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      alert("Error al actualizar: " + error.message);
+      return;
+    }
+
+    alert("Estudiante actualizado.");
+    editId = null;
+    const btn = document.getElementById("btn-guardar");
+    if (btn) btn.textContent = "Guardar";
+    limpiarFormulario();
+    cargarEstudiantes();
+    return;
+  }
+
+  // INSERT
   const { error } = await client.from("estudiantes").insert({
     nombre,
     correo,
@@ -28,11 +74,14 @@ async function agregarEstudiante() {
     alert("Error al agregar: " + error.message);
   } else {
     alert("Estudiante agregado");
+    limpiarFormulario();
     cargarEstudiantes();
   }
 }
 
-// Función para cargar los estudiantes
+// =========================
+/** Cargar estudiantes (con botones Editar y Eliminar) */
+// =========================
 async function cargarEstudiantes() {
   const { data, error } = await client
     .from("estudiantes")
@@ -46,14 +95,80 @@ async function cargarEstudiantes() {
 
   const lista = document.getElementById("lista-estudiantes");
   lista.innerHTML = "";
+
   data.forEach((est) => {
     const item = document.createElement("li");
-    item.textContent = `${est.nombre} (${est.clase})`;
+    item.innerHTML = `
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+        <span><strong>${est.nombre}</strong> (${est.clase}) - ${est.correo}</span>
+        <button class="btn-edit"
+          data-id="${est.id}"
+          data-nombre="${est.nombre}"
+          data-correo="${est.correo}"
+          data-clase="${est.clase}">
+          Editar
+        </button>
+        <button class="btn-delete" data-id="${est.id}">Eliminar</button>
+      </div>
+    `;
+
+    // Editar -> pasar a modo edición
+    item.querySelector(".btn-edit").addEventListener("click", (e) => {
+      const btn = e.currentTarget;
+      editId = btn.dataset.id;
+      document.getElementById("nombre").value = btn.dataset.nombre;
+      document.getElementById("correo").value = btn.dataset.correo;
+      document.getElementById("clase").value  = btn.dataset.clase;
+      const guardar = document.getElementById("btn-guardar");
+      if (guardar) guardar.textContent = "Actualizar";
+      document.getElementById("nombre").focus();
+    });
+
+    // Eliminar
+    item.querySelector(".btn-delete").addEventListener("click", (e) => {
+      const id = e.currentTarget.dataset.id;
+      eliminarEstudiante(id);
+    });
+
     lista.appendChild(item);
   });
 }
 
-// Función para subir un archivo
+// =========================
+/** Eliminar estudiante */
+// =========================
+async function eliminarEstudiante(id) {
+  if (!confirm("¿Seguro que deseas eliminar este registro?")) return;
+
+  const { data: { user }, error: userError } = await client.auth.getUser();
+  if (userError || !user) {
+    alert("No estás autenticado.");
+    return;
+  }
+
+  const { error } = await client
+    .from("estudiantes")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    alert("Error al eliminar: " + error.message);
+  } else {
+    alert("Registro eliminado.");
+    if (editId === id) {
+      editId = null;
+      const btn = document.getElementById("btn-guardar");
+      if (btn) btn.textContent = "Guardar";
+      limpiarFormulario();
+    }
+    cargarEstudiantes();
+  }
+}
+
+// =========================
+/** Subir archivo a Storage */
+// =========================
 async function subirArchivo() {
   const archivoInput = document.getElementById("archivo");
   const archivo = archivoInput.files[0];
@@ -64,14 +179,13 @@ async function subirArchivo() {
   }
 
   const { data: { user }, error: userError } = await client.auth.getUser();
-
   if (userError || !user) {
     alert("Sesión no válida.");
     return;
   }
 
   const nombreRuta = `${user.id}/${archivo.name}`;
-  const { data, error } = await client.storage
+  const { error } = await client.storage
     .from("tareas") // Nombre del bucket
     .upload(nombreRuta, archivo, {
       cacheControl: "3600",
@@ -82,11 +196,13 @@ async function subirArchivo() {
     alert("Error al subir: " + error.message);
   } else {
     alert("Archivo subido correctamente.");
-    listarArchivos(); 
+    listarArchivos();
   }
 }
 
-// Función para listar archivos
+// =========================
+/** Listar archivos del usuario */
+// =========================
 async function listarArchivos() {
   const { data: { user }, error: userError } = await client.auth.getUser();
 
@@ -107,6 +223,7 @@ async function listarArchivos() {
     return;
   }
 
+  // Render de cada archivo con URL firmada
   data.forEach(async (archivo) => {
     const { data: signedUrlData, error: signedUrlError } = await client.storage
       .from("tareas")
@@ -144,7 +261,9 @@ async function listarArchivos() {
   });
 }
 
-// Función para cerrar sesión
+// =========================
+/** Cerrar sesión */
+// =========================
 async function cerrarSesion() {
   const { error } = await client.auth.signOut();
 
@@ -157,5 +276,7 @@ async function cerrarSesion() {
   }
 }
 
-// Llamar a la función para cargar los estudiantes al cargar la página
+// =========================
+// Inicialización
+// =========================
 cargarEstudiantes();
